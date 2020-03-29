@@ -22,7 +22,7 @@ numberOfArmElements = 2
 numberOfLengthElements = 5
 
 pipeRadius = 5.#12
-lengthSize = 40.#24
+lengthSize = 70.#24
 squareSizeRatio = 0.500
 
 pressure_bc = False
@@ -928,6 +928,7 @@ for i in range(0,Total_nodes):
     vy[i]=dependentField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, int(i+1), 2)
     vx[i]=dependentField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, int(i+1), 1)
    
+
 if(pressure_bc):
   print(numpy.mean(vz),velocity)
 else:
@@ -942,5 +943,48 @@ else:
 
 #plt.colorbar(pic)
 #plt.show()
-
+X = []
+Cp = []
+Cx = []
+Cy = []
+Cz = []
+C = []
+#f = open("/hpc/sray036/VirtualPregnancy/repro-examples/uteroplacental/darcy-models/02-darcy-ell-full/output/StaticDarcy.part0.exnode",'r')
+g = open(".StaticDarcy.part0.exnode")
+currentline  = 1
+delP = (Pdrop-Pbase)/10
+print('Permeability is =',perm)
+gamma = 1/(1+(2.5*(1-porosity)))
+C1 = np.sqrt(gamma/perm)
+ST = g.readlines()
+r = []
+f = []
+fd = []
+sum1 = 0.0
+avg = 0
+with open(".StaticDarcy.part0.exnode") as file:
+    for i,l in enumerate(file):
+        pass
+N = i+1
+count = int((N-35)/15)
+for n in range(1,count):
+    #x_val = float(ST[9*n+6].strip())
+    x_val = round(float(ST[21+(n-1)*15].strip()),2)
+    #y_val = float(ST[9*n+7].strip())
+    y_val = round(float(ST[22+(n-1)*15].strip()),2)
+    #z_val = float(ST[9*n+8].strip())
+    z_val = round(float(ST[23+(n-1)*15].strip()),2)
+    if(z_val == 49.0):
+        f2 = round(float(ST[26+(n-1)*15].strip()),2)*1e-2
+        #print(f2)
+        r1 = np.sqrt((x_val**2)+(y_val**2))
+        ratio = (iv(0,(C1*r1*1*1e-2)))/(iv(0,(C1*5*1e-2)))
+        f1 = perm_vis*delP*(1-ratio)
+        r.append(r1)
+        f.append(f1)
+        fd.append(f2)
+#plt.ylim(-1,0.5)
+plt.plot(r,f,'r')
+plt.plot(r,fd,'b')
+plt.show()
 iron.Finalise()
