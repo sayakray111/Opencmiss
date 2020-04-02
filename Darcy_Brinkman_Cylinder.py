@@ -952,33 +952,36 @@ C = []
 #f = open("/hpc/sray036/VirtualPregnancy/repro-examples/uteroplacental/darcy-models/02-darcy-ell-full/output/StaticDarcy.part0.exnode",'r')
 g = open(".StaticDarcy.part0.exnode")
 currentline  = 1
-delP = (Pdrop-Pbase)/10
-print('Permeability is =',perm)
-gamma = 1/(1+(2.5*(1-porosity)))
-C1 = np.sqrt(gamma/perm)
+delP = (Pdrop-Pbase)/10 ## This is gradP/L
+print('Permeability is =',perm) ## This is the permeability tensor....
+gamma = 1/(1+(2.5*(1-porosity))) ## One of the constansts involved in the equations....
+C1 = np.sqrt(gamma/perm)## gamma as involved in the equation...
 ST = g.readlines()
 r = []
 f = []
 fd = []
 sum1 = 0.0
 avg = 0
+R_0 = pipeRadius ##Outer radius of the pipe... 
+
+## finds out the number of lines in the source file...
 with open(".StaticDarcy.part0.exnode") as file:
     for i,l in enumerate(file):
         pass
 N = i+1
-count = int((N-35)/15)
+count = int((N-35)/15) ## Calculates the number of lines here from the source file.
 for n in range(1,count):
     #x_val = float(ST[9*n+6].strip())
-    x_val = round(float(ST[21+(n-1)*15].strip()),2)
+    x_val = round(float(ST[21+(n-1)*15].strip()),2) # Extract the x-value....
     #y_val = float(ST[9*n+7].strip())
-    y_val = round(float(ST[22+(n-1)*15].strip()),2)
+    y_val = round(float(ST[22+(n-1)*15].strip()),2) # Extract the y-value.... 
     #z_val = float(ST[9*n+8].strip())
-    z_val = round(float(ST[23+(n-1)*15].strip()),2)
+    z_val = round(float(ST[23+(n-1)*15].strip()),2) # Extract the z-value....
     if(z_val == 49.0):
-        f2 = round(float(ST[26+(n-1)*15].strip()),2)*1e-2
+        f2 = round(float(ST[26+(n-1)*15].strip()),2)*1e-2 # Extract the function-value....
         #print(f2)
-        r1 = np.sqrt((x_val**2)+(y_val**2))
-        ratio = (iv(0,(C1*r1*1*1e-2)))/(iv(0,(C1*5*1e-2)))
+        r1 = np.sqrt((x_val**2)+(y_val**2)) ## Calculate the radius
+        ratio = (iv(0,(C1*r1*1*1e-2)))/(iv(0,(C1*R_0*1e-2))) ## calculate the souce function
         f1 = perm_vis*delP*(1-ratio)
         r.append(r1)
         f.append(f1)
